@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IV Monitor Prototype</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h2 { color: #0056b3; margin-top: 0; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-weight: bold; margin-bottom: 0.5rem; }
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+        }
+        button {
+            background-color: #0056b3; color: white; border: none; padding: 10px 15px;
+            border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px;
+        }
+        button:hover { background-color: #004494; }
+        
+        /* Dashboard specific styles */
+        .sensor-readout {
+            display: flex; justify-content: space-between; background: #eef2f5;
+            padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 18px;
+        }
+        .controls { background: #fff3cd; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 1. PATIENT INTAKE FORM -->
+    <div id="intake-section">
+        <h2>Patient IV Intake</h2>
+        <div class="form-group">
+            <label>Patient Name</label>
+            <input type="text" id="patient-name" placeholder="e.g. John Doe">
+        </div>
+        <div class="form-group">
+            <label>Age</label>
+            <input type="number" id="patient-age" placeholder="e.g. 45">
+        </div>
+        <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" id="patient-dob">
+        </div>
+        <div class="form-group">
+            <label>IV Fluid / Medication</label>
+            <input type="text" id="iv-use" placeholder="e.g. 0.9% Normal Saline">
+        </div>
+        <button onclick="startMonitoring()">Save & Open Dashboard</button>
+    </div>
+
+    <!-- 2. LIVE DASHBOARD (Hidden initially) -->
+    <div id="dashboard-section" style="display: none;">
+        <h2>Live Monitor: <span id="display-name">Patient</span></h2>
+        
+        <div class="sensor-readout">
+            <strong>Drip Rate:</strong> 
+            <span id="current-drip">0 drops/min</span>
+        </div>
+        <div class="sensor-readout">
+            <strong>IV Bag Weight:</strong> 
+            <span id="current-weight">0 g</span>
+        </div>
+        <div class="sensor-readout">
+            <strong>Time Remaining:</strong> 
+            <span id="current-time">--:--</span>
+        </div>
+
+        <div class="controls">
+            <h3>Adjust IV</h3>
+            <div class="form-group">
+                <label>Target Drip Rate (drops/min)</label>
+                <input type="number" id="target-rate" value="20">
+            </div>
+            <button onclick="sendTargetRate()">Update ESP32</button>
+            <button style="background-color: #dc3545;" onclick="stopIV()">EMERGENCY STOP</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // This function hides the form and shows the dashboard
+    function startMonitoring() {
+        // Grab the name the user typed in
+        const name = document.getElementById('patient-name').value;
+        
+        if(name) {
+            document.getElementById('display-name').innerText = name;
+        }
+
+        // Hide intake, show dashboard
+        document.getElementById('intake-section').style.display = 'none';
+        document.getElementById('dashboard-section').style.display = 'block';
+
+        // NOTE: Later, this is where we will add the code to save the patient info to Firebase!
+        console.log("Starting monitor for:", name);
+    }
+
+    // This function will eventually send data to Firebase
+    function sendTargetRate() {
+        const newRate = document.getElementById('target-rate').value;
+        alert("In the future, this will tell Firebase to change the rate to: " + newRate);
+        // Firebase write code will go here
+    }
+
+    function stopIV() {
+        alert("Sending stop command to ESP32!");
+        // Firebase write code to shut valve will go here
+    }
+</script>
+
+</body>
+</html>
